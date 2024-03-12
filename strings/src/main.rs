@@ -1,3 +1,5 @@
+use std::fmt;
+
 fn main() {
     // In general, the `{}` will be automatically replaced with any
     // arguments. These will be stringified.
@@ -42,7 +44,14 @@ fn main() {
     // defined types do not implement fmt::Display by default.
 
     #[allow(dead_code)] // disable `dead_code` which warn against unused module
+    #[derive(Debug)]
     struct Structure(i32);
+
+    impl fmt::Display for Structure {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            write!(f, "{}", self.0)
+        }
+    }
 
     // This will not compile because `Structure` does not implement
     // fmt::Display.
@@ -55,4 +64,40 @@ fn main() {
     let number: f64 = 1.0;
     let width: usize = 5;
     println!("{number:>width$}");
+
+    let pi = 3.141592;
+    println!("Pi is roughly {:x^20.4}", pi);
+
+    // Derive the `fmt::Debug` implementation for `Structure`. `Structure`
+    // Put a `Structure` inside of the structure `Deep`. Make it printable
+    // also.
+    #[derive(Debug)]
+    struct Deep(Structure);
+
+    // Printing with `{:?}` is similar to with `{}`.
+    println!("{:?} months in a year.", 12);
+    println!("{1:?} {0:?} is the {actor:?} name.",
+             "Slater",
+             "Christian",
+             actor="actor's");
+
+    // `Structure` is printable!
+    println!("Now {:?} will print!", Structure(3));
+
+    // The problem with `derive` is there is no control over how
+    // the results look. What if I want this to just show a `7`?
+    println!("Now {:#?} will print!", Deep(Structure(7)));
+
+    #[derive(Debug)]
+    struct Person<'a> {
+        name: &'a str,
+        age: u8
+    }
+
+    let name = "Peter";
+    let age = 27;
+    let peter = Person { name, age };
+
+    // Pretty print
+    println!("{:#?}", peter);
 }
