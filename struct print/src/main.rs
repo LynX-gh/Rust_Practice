@@ -80,7 +80,6 @@ impl UpperHex for Color {
     }
 }
 
-
 fn main() {
     let minmax = MinMax(0, 14);
 
